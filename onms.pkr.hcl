@@ -33,30 +33,22 @@ build {
     scripts = ["./scripts/10-update.sh", "./scripts/20-ansible.sh"]
   }
   sources = ["source.amazon-ebs.aws"]
-  provisioner "file" {
-    destination = "/home/ubuntu/"
-    source      = "./ansible-opennms"
-  }
-  provisioner "shell" {
-    environment_vars = [
-      "DEBIAN_FRONTEND=noninteractive",
-      "HOME_DIR=/home/ubuntu"
-    ]
-    execute_command   = "echo 'ubuntu' | {{.Vars}} sudo -S -E sh -eux '{{.Path}}'"
-    expect_disconnect = true
-    script = "./scripts/30-opennms.sh"
-  }
-#  provisioner "ansible" {
-#    extra_arguments = [
-#       "--connection=local",
-#       "--inventory=127.0.0.1,",
-#       "--become",
-#       "--extra-vars",
-#       "ansible_python_interpreter=/usr/bin/python"
-#      ]
-#        command = "ansible-playbook"
-#        playbook_file = "./ansible-opennms/hzn-core-db-deployment.yml"
-#        user = "ubuntu"
-#    }
 
+  provisioner "ansible-local" {
+    playbook_file = "./ansible-opennms/hzn-core-db-deployment.yml"
+    extra_arguments = ["-e", "skip_startup=true" ]
+    role_paths = [
+      "ansible-opennms/roles/opennms_core",
+      "ansible-opennms/roles/opennms_icmp",
+      "ansible-opennms/roles/opennms_minion",
+      "ansible-opennms/roles/opennms_openjdk",
+      "ansible-opennms/roles/opennms_repositories",
+      "ansible-opennms/roles/opennms_sentinel",
+      "ansible-opennms/roles/stub_elasticsearch",
+      "ansible-opennms/roles/stub_grafana",
+      "ansible-opennms/roles/stub_mimir",
+      "ansible-opennms/roles/stub_kafka",
+      "ansible-opennms/roles/stub_pgsql"
+    ]
+  }
 }
