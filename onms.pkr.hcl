@@ -32,13 +32,23 @@ build {
     expect_disconnect = true
     scripts = ["./scripts/10-update.sh", "./scripts/20-ansible.sh"]
   }
-
   sources = ["source.amazon-ebs.aws"]
 
-  provisioner "ansible" {
-        command = "ansible-playbook"
-        playbook_file = "./ansible-opennms/hzn-core-db-deployment.yml"
-        user = "ubuntu"
-        use_proxy = false
-    }
+  provisioner "ansible-local" {
+    playbook_file = "./ansible-opennms/hzn-core-db-deployment.yml"
+    extra_arguments = ["-e", "skip_startup=true" ]
+    role_paths = [
+      "ansible-opennms/roles/opennms_core",
+      "ansible-opennms/roles/opennms_icmp",
+      "ansible-opennms/roles/opennms_minion",
+      "ansible-opennms/roles/opennms_openjdk",
+      "ansible-opennms/roles/opennms_repositories",
+      "ansible-opennms/roles/opennms_sentinel",
+      "ansible-opennms/roles/stub_elasticsearch",
+      "ansible-opennms/roles/stub_grafana",
+      "ansible-opennms/roles/stub_mimir",
+      "ansible-opennms/roles/stub_kafka",
+      "ansible-opennms/roles/stub_pgsql"
+    ]
+  }
 }
